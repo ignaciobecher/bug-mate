@@ -1,0 +1,9 @@
+[
+  {
+    "phone": "5491123456789",
+    "name": "María García",
+    "company": "Empresa Ejemplo S.A.",
+    "systems": ["Sistema de Facturación"],
+    "notes": "Usuaria principal del módulo de facturación"
+  }
+]

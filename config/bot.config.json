@@ -1,0 +1,85 @@
+{
+  "identity": {
+    "name": "BugMate",
+    "company": "CuyoCode",
+    "developerName": "Ignacio",
+    "tone": "amigable, empático, profesional y conciso. Usá un lenguaje natural como si fueras una persona real, no un robot."
+  },
+  "greeting": {
+    "enabled": true,
+    "message": "¡Hola {clientName}! 👋 Soy *BugMate*, el asistente de atención al cliente de *{company}*.\n\nEstoy acá para ayudarte con cualquier consulta sobre el sistema. ¿En qué te puedo ayudar hoy?",
+    "unknownClientName": "👋",
+    "sessionTimeoutMinutes": 30
+  },
+  "menu": {
+    "message": "Elegí una opción respondiendo con el número:",
+    "options": [
+      {
+        "id": "1",
+        "label": "🐛 Reportar un error",
+        "action": "REPORT_ERROR"
+      },
+      {
+        "id": "2",
+        "label": "❓ Consultar sobre como realizar alguna acción o resolver una duda",
+        "action": "QUERY_KNOWLEDGE"
+      },
+      {
+        "id": "3",
+        "label": "👨‍💻 Hablar con Ignacio",
+        "action": "ESCALATE"
+      }
+    ]
+  },
+  "flows": {
+    "reportError": {
+      "steps": [
+        {
+          "key": "description",
+          "prompt": "Contame qué está pasando. Describí el error lo más detallado que puedas, por ejemplo: ¿qué estabas haciendo cuando ocurrió? ¿aparece algún mensaje de error?"
+        },
+        {
+          "key": "screenshot",
+          "prompt": "¿Podés enviarme una captura de pantalla del error o una foto de la pantalla? Si no tenés, escribí *no tengo*."
+        }
+      ],
+      "confirmationMessage": "Perfecto, registré el reporte. Voy a notificar a *{developerName}* para que lo revise a la brevedad. ¡Gracias por avisarnos! 🙏",
+      "developerNotification": "🐛 *Nuevo reporte de error*\n\n📱 *Cliente:* {clientName} ({clientPhone})\n📝 *Descripción:* {description}\n📎 *Captura:* {screenshot}"
+    },
+    "queryKnowledge": {
+      "inputPrompt": "Contame tu consulta y voy a buscar la información para ayudarte:",
+      "noResultMessage": "No encontré información específica sobre eso en mi base de conocimiento. Voy a notificar a *{developerName}* para que te ayude directamente.",
+      "resultPrefix": "Encontré esto que puede ayudarte:"
+    }
+  },
+  "ai": {
+    "model": "gemini-2.0-flash",
+    "embeddingModel": "gemini-embedding-001",
+    "systemPrompt": "Sos BugMate, el asistente de soporte técnico de {company}. Tu objetivo es ayudar a los clientes con dudas y problemas sobre el sistema. Respondé de forma natural y humana, como lo haría una persona real de soporte. Sé empático, claro y conciso. Si no sabés algo con certeza, no inventes — decí que vas a consultarlo. Usá español rioplatense.",
+    "ragMinScore": 0.72,
+    "ragTopK": 3,
+    "fallbackToEscalation": true,
+    "maxHistoryMessages": 10
+  },
+  "media": {
+    "processImages": true,
+    "processAudio": true,
+    "imagePrompt": "Analizá esta imagen en detalle. Si es una captura de pantalla de un sistema, describí qué ves: mensajes de error, botones, formularios, datos. Si es una foto, describí el contenido relevante.",
+    "audioPrompt": "Transcribí exactamente el mensaje de audio en español.",
+    "unsupportedMessage": "Recibí tu {mediaType}, pero por ahora no puedo procesarlo directamente. ¿Podés describirme con texto qué necesitás?"
+  },
+  "escalation": {
+    "keywords": [
+      "hablar con alguien",
+      "hablar con el desarrollador",
+      "soporte humano",
+      "quiero hablar con una persona",
+      "necesito ayuda humana",
+      "hablar con una persona real",
+      "hablar con ignacio",
+      "comunicarme con el programador"
+    ],
+    "clientMessage": "Entendido. Voy a notificar a *{developerName}* para que se comunique con vos a la brevedad. Por favor aguardá su respuesta. 🙏",
+    "developerNotification": "🔔 *BugMate — Solicitud de soporte humano*\n\n📱 *Cliente:* {clientName} ({clientPhone})\n💬 *Mensaje:* \"{message}\""
+  }
+}

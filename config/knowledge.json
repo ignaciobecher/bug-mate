@@ -1,0 +1,54 @@
+[
+  {
+    "id": "restart-internet",
+    "tags": ["internet", "conexión", "no carga", "lento", "no funciona", "error de red"],
+    "question": "El sistema no carga o va lento",
+    "answer": "Cuando el sistema no carga o responde lento, generalmente es un problema de conexión a internet. Probá los siguientes pasos:",
+    "steps": [
+      "Cerrá el navegador completamente y volvé a abrirlo",
+      "Verificá que tu conexión a internet esté funcionando (abrí otra página)",
+      "Reiniciá el router: desenchufalo 10 segundos y volvé a enchufarlo",
+      "Esperá 1 minuto y probá nuevamente",
+      "Si el problema persiste, probá desde otro dispositivo o red"
+    ]
+  },
+  {
+    "id": "login-issues",
+    "tags": ["contraseña", "no puedo entrar", "usuario", "login", "acceso", "olvidé"],
+    "question": "No puedo iniciar sesión o olvidé mi contraseña",
+    "answer": "Para problemas de acceso al sistema, seguí estos pasos:",
+    "steps": [
+      "Verificá que el usuario y contraseña estén escritos correctamente (sin espacios extra)",
+      "Asegurate que las mayúsculas estén correctas (la contraseña distingue mayúsculas y minúsculas)",
+      "Probá el botón 'Olvidé mi contraseña' si está disponible",
+      "Limpiá la caché del navegador (Ctrl+Shift+Delete) y volvé a intentar",
+      "Si seguís sin poder entrar, avisame y te ayudo a resetear el acceso"
+    ]
+  },
+  {
+    "id": "browser-compatibility",
+    "tags": ["navegador", "chrome", "firefox", "no se ve bien", "pantalla", "roto"],
+    "question": "El sistema no se ve bien o hay elementos rotos en pantalla",
+    "answer": "Problemas de visualización generalmente se resuelven así:",
+    "steps": [
+      "Usá Google Chrome o Firefox actualizados (son los navegadores recomendados)",
+      "Presioná Ctrl+F5 para forzar una recarga completa de la página",
+      "Limpiá la caché: Ctrl+Shift+Delete → seleccioná 'Imágenes y archivos en caché' → Borrar",
+      "Verificá que el zoom del navegador esté al 100% (Ctrl+0)",
+      "Si usás Internet Explorer o Edge antiguo, cambiá a Chrome"
+    ]
+  },
+  {
+    "id": "data-not-saving",
+    "tags": ["no guarda", "perdí datos", "no se guardó", "guardar", "se borró"],
+    "question": "Los datos no se guardan o se perdieron",
+    "answer": "Cuando los datos no se guardan correctamente:",
+    "steps": [
+      "Verificá que hayas presionado el botón Guardar/Confirmar antes de cerrar",
+      "Revisá tu conexión a internet — si se cortó mientras guardabas, los datos no se registraron",
+      "No cierres ni recargues la página mientras estás cargando datos importantes",
+      "Verificá en el listado si los datos están (a veces se guardan pero no se ven por un filtro activo)",
+      "Si perdiste datos importantes, avisame con el detalle para intentar recuperarlos"
+    ]
+  }
+]

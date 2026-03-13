@@ -1,0 +1,46 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: bugmate-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    # Pull the model on first startup
+    entrypoint: >
+      sh -c "ollama serve &
+             sleep 5 &&
+             ollama pull $${OLLAMA_MODEL:-qwen2.5} &&
+             wait"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  bugmate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bugmate-app
+    restart: unless-stopped
+    depends_on:
+      ollama:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_AUTO_START=false   # Ollama runs as its own container
+    volumes:
+      # Persist WhatsApp session so QR only needs to be scanned once
+      - ./wwebjs_auth:/app/.wwebjs_auth
+    ports:
+      - "${PORT:-3000}:3000"
+
+volumes:
+  ollama_data:
