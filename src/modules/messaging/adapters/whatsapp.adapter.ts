@@ -61,11 +61,31 @@ export class WhatsAppAdapter implements MessageAdapter, OnApplicationBootstrap {
 
   async sendMessage(message: OutgoingMessage): Promise<void> {
     try {
+      await this.simulateTyping(message.recipientId, message.text);
       await this.client.sendMessage(message.recipientId, message.text);
       this.logger.debug(`Sent to ${message.recipientId}`);
     } catch (error) {
       this.logger.error(`Failed to send to ${message.recipientId}: ${(error as Error).message}`);
       throw error;
+    }
+  }
+
+  private async simulateTyping(recipientId: string, text: string): Promise<void> {
+    const { humanDelay } = this.configLoader.botConfig;
+    if (!humanDelay.enabled) return;
+
+    const typingMs = Math.min(
+      Math.max(text.length * humanDelay.msPerCharacter, humanDelay.minDelayMs),
+      humanDelay.maxDelayMs,
+    );
+
+    try {
+      const chat = await this.client.getChatById(recipientId);
+      await chat.sendStateTyping();
+      await new Promise((resolve) => setTimeout(resolve, typingMs));
+      await chat.clearState();
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, typingMs));
     }
   }
 

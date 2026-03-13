@@ -68,6 +68,12 @@
     "fallbackToEscalation": true,
     "maxHistoryMessages": 10
   },
+  "humanDelay": {
+    "enabled": true,
+    "minDelayMs": 2000,
+    "maxDelayMs": 12000,
+    "msPerCharacter": 55
+  },
   "media": {
     "processImages": true,
     "processAudio": true,

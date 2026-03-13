@@ -62,6 +62,13 @@ export interface AiConfig {
   maxHistoryMessages: number;
 }
 
+export interface HumanDelayConfig {
+  enabled: boolean;
+  minDelayMs: number;
+  maxDelayMs: number;
+  msPerCharacter: number;
+}
+
 export interface MediaConfig {
   processImages: boolean;
   processAudio: boolean;
@@ -82,6 +89,7 @@ export interface BotConfig {
   greeting: GreetingConfig;
   menu: MenuConfig;
   flows: FlowsConfig;
+  humanDelay: HumanDelayConfig;
   ai: AiConfig;
   media: MediaConfig;
   escalation: EscalationConfig;
