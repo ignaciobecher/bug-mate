@@ -30,6 +30,11 @@
         "id": "3",
         "label": "👨‍💻 Hablar con Ignacio",
         "action": "ESCALATE"
+      },
+      {
+        "id": "4",
+        "label": "📋 Ver menú de nuevo",
+        "action": "SHOW_MENU"
       }
     ]
   },
@@ -70,6 +75,8 @@
   },
   "humanDelay": {
     "enabled": true,
+    "readingDelayMinMs": 1000,
+    "readingDelayMaxMs": 3500,
     "minDelayMs": 2000,
     "maxDelayMs": 12000,
     "msPerCharacter": 55

@@ -74,10 +74,16 @@ export class WhatsAppAdapter implements MessageAdapter, OnApplicationBootstrap {
     const { humanDelay } = this.configLoader.botConfig;
     if (!humanDelay.enabled) return;
 
+    const readingMs =
+      humanDelay.readingDelayMinMs +
+      Math.random() * (humanDelay.readingDelayMaxMs - humanDelay.readingDelayMinMs);
+
     const typingMs = Math.min(
       Math.max(text.length * humanDelay.msPerCharacter, humanDelay.minDelayMs),
       humanDelay.maxDelayMs,
     );
+
+    await new Promise((resolve) => setTimeout(resolve, readingMs));
 
     try {
       const chat = await this.client.getChatById(recipientId);

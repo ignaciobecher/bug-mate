@@ -64,6 +64,8 @@ export interface AiConfig {
 
 export interface HumanDelayConfig {
   enabled: boolean;
+  readingDelayMinMs: number;
+  readingDelayMaxMs: number;
   minDelayMs: number;
   maxDelayMs: number;
   msPerCharacter: number;
