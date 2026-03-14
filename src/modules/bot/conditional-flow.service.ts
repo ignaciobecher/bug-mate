@@ -484,14 +484,23 @@ export class ConditionalFlowService {
       botName: identity.name,
     };
 
-    // Flatten flowData: strings go directly, objects get dot-notation keys
+    // Flatten flowData: strings go directly, objects get dot-notation keys (recursive)
+    const flatten = (prefix: string, obj: Record<string, unknown>) => {
+      for (const [k, v] of Object.entries(obj)) {
+        const fullKey = `${prefix}.${k}`;
+        if (typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean') {
+          vars[fullKey] = String(v ?? '');
+        } else if (v && typeof v === 'object') {
+          flatten(fullKey, v as Record<string, unknown>);
+        }
+      }
+    };
+
     for (const [key, value] of Object.entries(session.flowData)) {
       if (typeof value === 'string') {
         vars[key] = value;
       } else if (value && typeof value === 'object') {
-        for (const [subKey, subVal] of Object.entries(value as Record<string, unknown>)) {
-          vars[`${key}.${subKey}`] = String(subVal ?? '');
-        }
+        flatten(key, value as Record<string, unknown>);
       }
     }
 

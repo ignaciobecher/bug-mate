@@ -23,12 +23,255 @@
 </p>
 
 <p align="center">
+  <a href="#guía-para-no-técnicos">Guía rápida</a> ·
   <a href="#inicio-rápido">Inicio rápido</a> ·
   <a href="#configuración-del-bot">Configuración</a> ·
   <a href="#flujos-condicionales">Flujos</a> ·
   <a href="#base-de-conocimiento">Base de conocimiento</a> ·
   <a href="#arquitectura">Arquitectura</a>
 </p>
+
+---
+
+## Guía para no técnicos
+
+> Esta sección es para vos si nunca instalaste un bot o no sabés programar. Seguí los pasos en orden y en 20 minutos tenés BugMate funcionando.
+
+### ¿Qué es BugMate?
+
+BugMate es un bot de WhatsApp que atiende a tus clientes automáticamente. Cuando un cliente te escribe, el bot:
+
+- Lo saluda y le da opciones para elegir
+- Si reporta un error → lo registra y te avisa por WhatsApp + crea una tarjeta en Trello
+- Si tiene una consulta → responde usando los documentos de tu sistema con IA
+- Si quiere hablar con alguien → te avisa directamente
+
+Vos configurás todo sin tocar código — solo editás archivos de texto (JSON).
+
+---
+
+### Paso 1 — Instalar los programas necesarios
+
+Necesitás instalar tres cosas. Hacé click en cada link y seguí las instrucciones de instalación:
+
+1. **Node.js** → [nodejs.org](https://nodejs.org) — elegí la versión "LTS" (la recomendada)
+2. **Git** → [git-scm.com/downloads](https://git-scm.com/downloads) — necesario para descargar el proyecto
+3. **Un editor de texto** → recomendamos [Visual Studio Code](https://code.visualstudio.com/) — para editar los archivos de configuración
+
+Después de instalar Node.js, abrí una terminal (en Windows: buscá "cmd" o "PowerShell" en el menú Inicio) y verificá que quedó bien:
+
+```
+node --version
+```
+
+Tiene que aparecer algo como `v22.0.0`. Si aparece un número, está perfecto.
+
+---
+
+### Paso 2 — Descargar el proyecto
+
+En la terminal, ejecutá estos comandos uno por uno:
+
+```bash
+git clone https://github.com/tu-org/bug-mate.git
+cd bug-mate
+npm install
+```
+
+El último comando puede tardar un par de minutos — está descargando las dependencias. Es normal.
+
+---
+
+### Paso 3 — Elegir el proveedor de IA
+
+BugMate necesita una IA para responder preguntas. Tenés dos opciones:
+
+**Opción A — Gemini (Google) ✅ Recomendado para empezar**
+- Es gratis para uso básico
+- Funciona en la nube — no necesitás una PC potente
+- Cómo obtener tu clave gratuita:
+  1. Entrá a [aistudio.google.com](https://aistudio.google.com)
+  2. Iniciá sesión con tu cuenta de Google
+  3. Hacé click en **"Get API Key"** → **"Create API Key"**
+  4. Copiá la clave que aparece (algo como `AIzaSy...`)
+
+**Opción B — Ollama (corre en tu computadora)**
+- Completamente gratuito y privado — nada sale de tu PC
+- Requiere una computadora con al menos 8GB de RAM
+- Ver [instrucciones detalladas de Ollama](#ollama-local-open-source) más abajo
+
+---
+
+### Paso 4 — Crear el archivo de configuración `.env`
+
+En la carpeta del proyecto, copiá el archivo de ejemplo:
+
+- **Windows:** en la terminal escribí `copy .env.example .env`
+- **Mac/Linux:** `cp .env.example .env`
+
+Después abrí el archivo `.env` con el editor de texto y completá los valores:
+
+```env
+# Elegí "gemini" u "ollama"
+AI_PROVIDER=gemini
+
+# Si elegiste gemini, pegá acá tu clave de API de Google
+GEMINI_API_KEY=AIzaSy...tu_clave_aqui
+
+# Tu número de WhatsApp (sin el +, sin espacios)
+# Ejemplo Argentina: 5491123456789
+DEVELOPER_PHONE=5491123456789
+```
+
+Guardá el archivo.
+
+---
+
+### Paso 5 — Configurar el bot
+
+Abrí el archivo `config/bot.config.json` con tu editor de texto. Ahí podés cambiar:
+
+- **Nombre del bot** — campo `"name"` dentro de `"identity"`
+- **Nombre de tu empresa** — campo `"company"`
+- **Tu nombre** — campo `"developerName"` (aparece en los mensajes al cliente)
+
+Por ejemplo:
+```json
+"identity": {
+  "name": "MiBot",
+  "company": "Mi Empresa S.A.",
+  "developerName": "Juan"
+}
+```
+
+---
+
+### Paso 6 — Agregar tus clientes
+
+Abrí el archivo `config/clients.json`. Si no existe, copiá el de ejemplo:
+- **Windows:** `copy config\clients.example.json config\clients.json`
+- **Mac/Linux:** `cp config/clients.example.json config/clients.json`
+
+Editá el archivo con los datos de tus clientes:
+
+```json
+[
+  {
+    "phone": "5491123456789",
+    "name": "María García",
+    "company": "Empresa del Cliente S.A.",
+    "systems": ["Nombre del sistema que usan"],
+    "knowledgeDocs": ["nombre-del-archivo-de-conocimiento.md"],
+    "trelloLists": {
+      "bugs": "ID_DE_COLUMNA_BUGS"
+    },
+    "notes": "Cualquier nota interna"
+  }
+]
+```
+
+El campo `phone` es el número de WhatsApp del cliente, **sin el +** y sin espacios. Para Argentina sería `549` + el número celular.
+
+> **Importante:** Este archivo contiene datos privados — nunca lo subas a GitHub. Ya está protegido por `.gitignore`.
+
+---
+
+### Paso 7 — Agregar conocimiento del sistema (opcional)
+
+Si querés que el bot pueda responder preguntas sobre tu sistema, creá un archivo de texto con la documentación:
+
+1. Creá un archivo `.md` o `.txt` en la carpeta `config/knowledge-docs/`
+   - Ejemplo: `config/knowledge-docs/mi-sistema-knowledge.md`
+2. Escribí ahí todo lo que el bot necesita saber: cómo funciona el sistema, errores comunes y sus soluciones, preguntas frecuentes, etc.
+3. En `clients.json`, en el campo `knowledgeDocs` del cliente, poné el nombre de ese archivo:
+   ```json
+   "knowledgeDocs": ["mi-sistema-knowledge.md"]
+   ```
+
+El bot va a leer ese documento y podrá responder preguntas basándose en él.
+
+---
+
+### Paso 8 — Configurar Trello (opcional)
+
+Si querés que el bot cree tarjetas en Trello automáticamente cuando un cliente reporta un error:
+
+**8.1 — Obtener tus credenciales de Trello:**
+1. Entrá a [trello.com/power-ups/admin](https://trello.com/power-ups/admin)
+2. Hacé click en **"Crear un Power-Up"**, dale un nombre (ej. "BugMate") y guardá
+3. Copiá el **API Key** que aparece
+4. Hacé click en **"Token"**, autorizá la app, y copiá el **Token**
+
+**8.2 — Agregá las credenciales al `.env`:**
+```env
+TRELLO_API_KEY=tu_api_key_aqui
+TRELLO_TOKEN=tu_token_aqui
+```
+
+**8.3 — Descubrir los IDs de tus columnas:**
+
+Primero iniciá el bot (Paso 9), configurá el grupo de control, y enviá el comando `!trello` desde ese grupo. El bot te va a responder con todos tus tableros y columnas con sus IDs.
+
+**8.4 — Asignar columnas a cada cliente:**
+
+En `clients.json`, agregá los IDs de las columnas de Trello de ese cliente:
+```json
+"trelloLists": {
+  "bugs": "ID_de_la_columna_Bugs",
+  "pendientes": "ID_de_la_columna_Pendientes"
+}
+```
+
+---
+
+### Paso 9 — Iniciar el bot
+
+En la terminal, dentro de la carpeta del proyecto:
+
+```bash
+npm run start:dev
+```
+
+La primera vez va a aparecer un **código QR** en la terminal. Tenés que escanearlo con WhatsApp:
+
+1. Abrí WhatsApp en tu celular
+2. Tocá los tres puntitos (⋮) → **Dispositivos vinculados**
+3. Tocá **"Vincular un dispositivo"**
+4. Escaneá el QR que aparece en la terminal
+
+Una vez escaneado, el bot está activo. Escribile desde otro número de WhatsApp y debería responder.
+
+> **Nota:** El número de WhatsApp que escanea el QR es el número del bot — es el que va a responder a los clientes. Idealmente usá un número dedicado para el bot.
+
+---
+
+### Paso 10 — Configurar el grupo de control (opcional pero recomendado)
+
+El grupo de control es un grupo de WhatsApp privado donde podés enviarle comandos al bot sin que los clientes lo vean.
+
+1. Creá un grupo de WhatsApp (ej. "Control BugMate")
+2. Agregá al grupo el número del bot
+3. Enviá `!grupos` desde ese grupo — el bot te va a responder con el ID del grupo
+4. Copiá ese ID y pegálo en el `.env`:
+   ```env
+   CONTROL_GROUP_ID=120363XXXXXXXXXX@g.us
+   ```
+5. Reiniciá el bot
+
+Desde ese grupo podés usar comandos como `!estado`, `!sesiones`, `!trello`, etc.
+
+---
+
+### ¿Problemas comunes?
+
+| Problema | Solución |
+|---|---|
+| El QR no aparece | Esperá 30 segundos, si no aparece reiniciá con `npm run start:dev` |
+| El bot no responde | Verificá que el número del bot esté en línea en WhatsApp |
+| Error "GEMINI_API_KEY not set" | Revisá que el `.env` tenga la clave correcta y sin espacios extra |
+| Quiero cambiar el flujo | Editá `bot.config.json`, guardá, y reiniciá el bot |
+| El bot no encuentra al cliente | Verificá que el `phone` en `clients.json` tenga el formato correcto (sin +) |
+| Quiero re-indexar el conocimiento | Borrá el archivo `data/knowledge.sqlite` y reiniciá el bot |
 
 ---
 
@@ -640,7 +883,11 @@ Después de la escalación el bot deja de responderle al usuario (estado: `ESCAL
     "name": "María García",
     "company": "Empresa S.A.",
     "systems": ["Sistema de Facturación"],
-    "knowledgeDocs": ["medilab-knowledge.md"],
+    "knowledgeDocs": ["empresa-knowledge.md"],
+    "trelloLists": {
+      "bugs": "ID_columna_bugs",
+      "pendientes": "ID_columna_pendientes"
+    },
     "notes": "Usuaria principal del módulo de facturación"
   }
 ]
@@ -653,6 +900,7 @@ Después de la escalación el bot deja de responderle al usuario (estado: `ESCAL
 | `company` | Nombre de la empresa — usado en `{matchedClient.company}` y para la validación difusa |
 | `systems` | Lista de sistemas que usa este cliente (informativo) |
 | `knowledgeDocs` | Archivos de conocimiento que este cliente puede consultar (ver abajo) |
+| `trelloLists` | IDs de columnas de Trello por nombre lógico (ej. `"bugs"`, `"pendientes"`) — cada cliente apunta a su propio tablero |
 | `notes` | Notas internas (no se muestran al usuario) |
 
 El paso `validate` coincide contra `name` y `company` usando matching difuso (case-insensitive, elimina S.A./S.R.L. etc), y también coincide por número de teléfono exacto.
@@ -758,28 +1006,39 @@ Enviá `!trello` desde el grupo de control. El bot responde con todos tus tabler
   • Hecho          ID: `ghi789`
 ```
 
-**Paso 4 — Configurar en `bot.config.json`:**
+**Paso 4 — Habilitá Trello en `bot.config.json`:**
 ```json
 "trello": {
-  "enabled": true,
-  "lists": {
+  "enabled": true
+}
+```
+
+**Paso 5 — Asigná las columnas a cada cliente en `clients.json`:**
+```json
+{
+  "name": "María García",
+  "company": "Empresa S.A.",
+  "trelloLists": {
     "bugs": "abc123",
     "pendientes": "def456"
   }
 }
 ```
 
+Cada cliente puede tener sus propias columnas en su propio tablero. Solo necesitás el ID de la columna — no el del tablero.
+
 ### Crear una tarjeta desde un flujo
 
-Usá la acción `CREATE_TRELLO_CARD` en cualquier paso `message`, junto con `trelloCard`:
+Agregá `trelloCard` a cualquier paso `message`. El campo `listId` soporta interpolación — usá `{matchedClient.trelloLists.bugs}` para apuntar automáticamente a la columna del cliente que está chateando:
 
 ```json
 {
   "type": "message",
   "text": "✅ Reporte registrado. Te contactamos a la brevedad. 🙏",
-  "action": "CREATE_TRELLO_CARD",
+  "action": "NOTIFY_DEVELOPER",
+  "notification": "🐛 Error de {matchedClient.name}: {errorDescription}",
   "trelloCard": {
-    "listKey": "bugs",
+    "listId": "{matchedClient.trelloLists.bugs}",
     "title": "🐛 [{matchedClient.company}] {errorDescription}",
     "description": "**Cliente:** {matchedClient.name}\n**Teléfono:** {senderPhone}\n**Error:** {errorDescription}\n**Captura:** {errorScreenshot}\n**Hora:** {timestamp}"
   },
@@ -787,9 +1046,9 @@ Usá la acción `CREATE_TRELLO_CARD` en cualquier paso `message`, junto con `tre
 }
 ```
 
-El `title` y `description` soportan interpolación `{variable}` igual que el resto del DSL.
+El `listId`, `title` y `description` soportan interpolación `{variable}` igual que el resto del DSL.
 
-> Si Trello no está configurado (`TRELLO_API_KEY` ausente), la acción se omite silenciosamente — el flujo continúa normalmente.
+> Si Trello no está configurado (`TRELLO_API_KEY` ausente) o el cliente no tiene `trelloLists`, la tarjeta se omite silenciosamente — el flujo continúa normalmente.
 
 ---
 
