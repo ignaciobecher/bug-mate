@@ -33,6 +33,19 @@
 
 ---
 
+> [!WARNING]
+> **Aviso importante — uso de WhatsApp**
+>
+> BugMate utiliza [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js), una librería no oficial que automatiza WhatsApp Web mediante Puppeteer. **No está afiliada ni respaldada por Meta/WhatsApp.**
+>
+> El uso de bots automatizados puede violar los [Términos de Servicio de WhatsApp](https://www.whatsapp.com/legal/terms-of-service). En consecuencia, **los números de teléfono utilizados podrían ser suspendidos o baneados permanentemente** sin previo aviso.
+>
+> **Al clonar o utilizar este proyecto, aceptás estos riesgos y asumís total responsabilidad** por el uso que hagas del mismo. Los autores no se hacen responsables por cuentas bloqueadas, pérdida de datos ni ningún otro perjuicio derivado del uso de esta herramienta.
+>
+> Se recomienda usar un **número de WhatsApp dedicado** (no tu número personal ni el de producción de tu empresa) para operar el bot.
+
+---
+
 ## Guía para no técnicos
 
 > Esta sección es para vos si nunca instalaste un bot o no sabés programar. Seguí los pasos en orden y en 20 minutos tenés BugMate funcionando.
