@@ -4,6 +4,7 @@
 # WhatsApp session data (contains auth credentials — never commit)
 /.wwebjs_auth
 /wwebjs_auth
+/.wwebjs_cache
 /wwebjs_cache
 /node_modules
 /build
@@ -65,11 +66,13 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .claude
 
 # Data — contains vectorized client knowledge (auto-generated)
-/data/*.sqlite
+/data/*
+!/data/.gitkeep
 
 # Client data — contains real client names, phones, companies
 # Copy clients.example.json and fill with your own data
 /config/clients.json
 
 # Knowledge docs — may contain confidential client documentation
-/config/knowledge-docs/
+/config/knowledge-docs/*
+!/config/knowledge-docs/.gitkeep
