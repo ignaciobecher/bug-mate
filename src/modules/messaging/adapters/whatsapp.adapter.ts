@@ -18,8 +18,8 @@ export class WhatsAppAdapter implements MessageAdapter, OnApplicationBootstrap {
   /** Senders for whom the bot is paused (dev took over the conversation) */
   private readonly pausedSenders = new Set<string>();
 
-  /** IDs of messages sent programmatically by the bot (to ignore in message_create) */
-  private readonly botSentMessageIds = new Set<string>();
+  /** Whether the bot is currently sending a message programmatically (to ignore in message_create) */
+  private isBotSending = false;
 
   constructor(
     private readonly botService: BotService,
@@ -76,7 +76,7 @@ export class WhatsAppAdapter implements MessageAdapter, OnApplicationBootstrap {
     this.client.on('message_create', async (message: Message) => {
       if (!message.fromMe) return;
       // Ignore messages sent programmatically by the bot itself
-      if (this.botSentMessageIds.delete(message.id.id)) return;
+      if (this.isBotSending) return;
       await this.handleOutgoingMessage(message);
     });
 
@@ -86,12 +86,14 @@ export class WhatsAppAdapter implements MessageAdapter, OnApplicationBootstrap {
   async sendMessage(message: OutgoingMessage): Promise<void> {
     try {
       await this.simulateTyping(message.recipientId, message.text);
-      const sent = await this.client.sendMessage(message.recipientId, message.text);
-      this.botSentMessageIds.add(sent.id.id);
+      this.isBotSending = true;
+      await this.client.sendMessage(message.recipientId, message.text);
       this.logger.debug(`Sent to ${message.recipientId}`);
     } catch (error) {
       this.logger.error(`Failed to send to ${message.recipientId}: ${(error as Error).message}`);
       throw error;
+    } finally {
+      this.isBotSending = false;
     }
   }
 
